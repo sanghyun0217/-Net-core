@@ -1,0 +1,405 @@
+﻿@model WebApplication2.Models.Article
+@{
+  ViewData["Title"] = "Test";
+}
+
+<div class="container-fluid">
+  <div class="row" style="margin-top:2rem;">
+    <div class="col-md-12">
+      <div class="col-md-12" style="margin-bottom:1rem;">
+        <div class="pull-left">
+          <button shiro:hasPermission="tutorzzz:orders:add" type="button" class="btn  btn-primary"
+                  onclick="BatchRemoveIds()">
+            <i class="fa fa-plus" aria-hidden="true"></i>Delete
+          </button>
+        </div>
+        <div class="pull-left" style="margin-left:5px">
+          <button shiro:hasPermission="tutorzzz:orders:add" type="button" class="btn  btn-primary"
+                  onclick="DialogAdd()">
+            <i class="fa fa-plus" aria-hidden="true"></i>Add
+          </button>
+        </div>
+        <div class="columns pull-right">
+          <button class="btn btn-success" onclick="Search()">Search</button>
+        </div>
+        <div class="columns pull-right col-md-2 nopadding">
+          <input id="searchName" type="text" class="form-control"
+                 placeholder="">
+        </div>
+        <div class="columns pull-right col-md-2 nopadding">
+          <select id="condition_id" style="" class="form-control">
+            <option value="-1" selected>search optioin</option>
+            <option value="title">title</option>
+            <option value="author">author</option>
+
+          </select>
+        </div>
+
+      </div>
+      <div class="col-md-12">
+        <table id="exampleTable" data-mobile-responsive="true" data-sort-class="table-active"
+               data-sortable="true"></table>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<div id="indexDialog" class="dialog">
+  <div class="dialog-content">
+    <div class="dialog-header">
+      <h2 id="indexDialogHead">Create</h2>
+    </div>
+    <div class="dialog-body">
+      <div class="row">
+        <div class="col-md-4" style="width:100%">
+          <form id="indexDialogForm">
+            <div class="form-group">
+              <label class="control-label">Id</label>
+              <input class="form-control" disabled="disabled" id="indexDialogId" name="indexDialogId" />
+            </div>
+            <div class="form-group">
+              <label class="control-label">Title</label>
+              <input class="form-control" id="indexDialogTitle" name="indexDialogTitle" />
+            </div>
+            <div class="form-group">
+              <label class="control-label">Author</label>
+              <input class="form-control" id="indexDialogAuthor" name="indexDialogAuthor" />
+            </div>
+            <div class="form-group">
+              <label class="control-label">Date</label>
+              <input class="form-control" id="indexDialogDate" name="indexDialogDate" />
+            </div>
+            <div class="form-group">
+              <label class="control-label">Content</label>
+              <input class="form-control" id="indexDialogContent" name="indexDialogContent" />
+            </div>
+            <div class="form-group">
+              <label class="control-label">AttachFile</label>
+              <input class="form-control" id="indexDialogAttachFile" name="indexDialogAttachFile" />
+            </div>
+            <div class="form-group">
+              <input type="submit" class="form-control btn-danger" value="Save" />
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="dialog-footer">
+      <button class="btn btn-default" onclick="CloseDialog()">Cancle</button>
+    </div>
+  </div>
+
+</div>
+
+
+@section Scripts{
+
+  <script>
+    var prefix = '/api/Articles';
+    var searchFlag = 0;
+    var cols = [
+      {
+        title: '#',
+        checkbox: true
+      }
+      ,
+      {
+        field: 'id',
+        title: 'id',
+      },
+      {
+        field: 'title',
+        title: 'title', sortable: true
+      },
+      {
+        field: 'date',
+        title: 'date',
+      },
+      {
+        field: 'author',
+        title: 'author',
+      },
+
+      {
+        field: 'content',
+        title: 'content', sortable: true
+      },
+      {
+        field: 'attachFile',
+        title: 'AttachFile', sortable: true
+      },
+
+      {
+        title: 'action',
+        field: 'id',
+        align: 'center',
+        formatter: function (value, row, index) {
+          return '<a href="javascript:void(0);" onclick="BatchRemove(' + value + ')" ">Delete</a>|' + '<a href="javascript:void(0);" onclick="DialogEdit(' + value + ')" ">Edit</a>';
+        }
+      }
+
+    ];
+
+    $(function () {
+      Load();
+    });
+
+    function Load() {
+      $('#exampleTable')
+        .bootstrapTable(
+          {
+            method: 'POST',
+            url: prefix,
+
+            showColumns: true,
+            iconSize: 'outline',
+            toolbar: '#exampleToolbar',
+            striped: true,
+            dataType: "json",
+            pagination: true,
+            singleSelect: false,
+            contentType: "application/x-www-form-urlencoded",
+            pageSize: 10,
+            pageNumber: 1,
+
+            showColumns: false,
+            sidePagination: "server",
+            queryParamsType: "",
+
+            sortOrder: "desc",
+            sortName: "id",
+            queryParams: InitParams,
+
+            uniqueId: 'id',
+
+            responseHandler: function (res) {
+              return {
+                "total": res.total,
+                "rows": res.data
+              };
+            },
+            columns: cols
+          });
+      $("#indexDialogForm")
+        .validate(
+          {
+            rules: {
+              indexDialogTitle: "required",
+              indexDialogAuthor: "required",
+              indexDialogDate: {
+                required: true,
+                date: true
+              }
+            },
+            submitHandler: function (form) {
+              if ($('#indexDialogHead').text() == 'Create') {
+                BatchAdd();
+              }
+              else {
+                BatchEdit();
+              }
+            }
+          });
+      $("#indexDialogDate").flatpickr({
+        enableTime: true,
+        dateFormat: "Y/m/d H:i",
+      });
+    }
+
+    function Reload() {
+      $('#exampleTable').bootstrapTable('refresh');
+    }
+
+    function Search() {
+      var optionData = { pageNumber: 1 }
+      if ($("#condition_id").val() != '-1' && $("#searchName").val().trim() != '') {
+        optionData[$("#condition_id").val()] = $("#searchName").val().trim();
+
+        searchFlag = 1;
+      } else {
+        searchFlag = 0;
+      }
+      if ($("#requireType").val() != -1) {
+        optionData['requireType'] = $("#requireType").val();
+      }
+      $("#exampleTable").bootstrapTable("refreshOptions", optionData);
+      Reload();
+    }
+
+    function InitParams(params) {
+      var jsonData = {
+        pageNumber: params.pageNumber,
+        pageSize: params.pageSize,
+        sortField: params.sortName,
+        order: params.sortOrder
+      };
+      if ($("#condition_id").val() != '-1' && $("#searchName").val().trim() != '' && searchFlag == 1) {
+        jsonData[$("#condition_id").val()] = $("#searchName").val().trim();
+
+      }
+
+      return jsonData;
+    }
+
+    function ShowDialog(article) {
+      if (article == undefined) {
+        article = {
+          id: '',
+          title: '',
+          author: '',
+          date: '',
+          content: '',
+          attachFile: ''
+        }
+      }
+      $('#indexDialogId').val(article.id);
+      $('#indexDialogTitle').val(article.title);
+      $('#indexDialogAuthor').val(article.author);
+      $('#indexDialogDate').val(article.date);
+      $('#indexDialogContent').val(article.content);
+      $('#indexDialogAttachFile').val(article.attachFile);
+
+      $('#indexDialog').css('display', 'block');
+    }
+
+    function CloseDialog() {
+      $('#indexDialog').css('display', 'none');
+    }
+
+    function DialogAdd() {
+      $('#indexDialogHead').text('Create');
+
+      ShowDialog();
+    }
+
+    function DialogEdit(id) {
+      $('#indexDialogHead').text('Edit');
+
+      var article = $('#exampleTable').bootstrapTable('getRowByUniqueId', id);
+      ShowDialog(article);
+    }
+
+    function BatchAdd() {
+      var article = {
+        Title: $('#indexDialogTitle').val(),
+        Author: $('#indexDialogAuthor').val(),
+        Date: $('#indexDialogDate').val(),
+        Content: $('#indexDialogContent').val(),
+        AttachFile: $('#indexDialogAttachFile').val()
+      };
+      var url = '/Articles/PostCreate';
+      $.ajax({
+        type: 'POST',
+        url: url,
+        data: { article: article },
+        dataType: 'json',
+        success: function (data) {
+          if (data.result == 1) {
+            alert('Create success');
+            CloseDialog();
+            Reload();
+          }
+          else {
+            alert('Create faile: ' + data.msg);
+          }
+        }
+      });
+      return 1;
+    }
+
+    function BatchRemoveIds() {
+      var rows = $('#exampleTable').bootstrapTable('getSelections');
+      if (rows.length == 0) {
+        alert("please select some item");
+        return;
+      }
+      var r = confirm("Are you sure to delete these items?");
+      if (r == true) {
+        var ids = new Array();
+        $.each(rows, function (i, row) {
+          ids[i] = row['id'];
+        });
+        $.ajax({
+          type: 'POST',
+          data: {
+            "ids": ids
+          },
+          url: '/Articles/batchRemove',
+          success: function (r) {
+            console.log(r);
+            if (r == "success") {
+              Reload();
+            }
+          }
+        });
+      }
+    }
+
+    function BatchRemove(id) {
+      var r = confirm("Are you sure to delete these items?");
+      if (r == true) {
+        var ids = new Array();
+        ids[0] = id;
+        $.ajax({
+          type: 'POST',
+          data: {
+            "ids": ids
+          },
+          url: '/Articles/batchRemove',
+          success: function (r) {
+            console.log(r);
+            if (r == "success") {
+              Reload();
+            }
+          }
+        });
+      }
+    }
+
+    function BatchEdit() {
+      var article = {
+        Id: $('#indexDialogId').val(),
+        Title: $('#indexDialogTitle').val(),
+        Author: $('#indexDialogAuthor').val(),
+        Date: $('#indexDialogDate').val(),
+        Content: $('#indexDialogContent').val(),
+        AttachFile: $('#indexDialogAttachFile').val()
+      };
+      var id = article.Id;
+      var url = '/Articles/PostEdit';
+      $.ajax({
+        type: 'POST',
+        url: url,
+        data: { id: id, article: article },
+        dataType: 'json',
+        success: function (data) {
+          if (data.result == 1) {
+            alert('Edit success');
+            CloseDialog();
+            Reload();
+          }
+          else {
+            alert('Edit fail: ' + data.msg);
+          }
+        }
+      });
+      return 1;
+    }
+
+    function Search() {
+      var optionData = { pageNumber: 1 }
+      if ($("#condition_id").val() != '-1' && $("#searchName").val().trim() != '') {
+        optionData[$("#condition_id").val()] = $("#searchName").val().trim();
+        searchFlag = 1;
+      } else {
+        searchFlag = 0;
+      }
+      $("#exampleTable").bootstrapTable("refreshOptions", optionData);
+      Reload();
+    }
+  </script>
+}
+

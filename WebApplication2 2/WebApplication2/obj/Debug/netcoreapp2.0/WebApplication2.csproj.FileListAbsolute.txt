@@ -1,0 +1,11 @@
+/Users/HJ_MAC/Desktop/WebApplication2 2/WebApplication2/bin/Debug/netcoreapp2.0/WebApplication2.deps.json
+/Users/HJ_MAC/Desktop/WebApplication2 2/WebApplication2/bin/Debug/netcoreapp2.0/WebApplication2.runtimeconfig.json
+/Users/HJ_MAC/Desktop/WebApplication2 2/WebApplication2/bin/Debug/netcoreapp2.0/WebApplication2.runtimeconfig.dev.json
+/Users/HJ_MAC/Desktop/WebApplication2 2/WebApplication2/bin/Debug/netcoreapp2.0/WebApplication2.dll
+/Users/HJ_MAC/Desktop/WebApplication2 2/WebApplication2/bin/Debug/netcoreapp2.0/WebApplication2.pdb
+/Users/HJ_MAC/Desktop/WebApplication2 2/WebApplication2/obj/Debug/netcoreapp2.0/WebApplication2.csprojAssemblyReference.cache
+/Users/HJ_MAC/Desktop/WebApplication2 2/WebApplication2/obj/Debug/netcoreapp2.0/WebApplication2.csproj.CoreCompileInputs.cache
+/Users/HJ_MAC/Desktop/WebApplication2 2/WebApplication2/obj/Debug/netcoreapp2.0/WebApplication2.AssemblyInfoInputs.cache
+/Users/HJ_MAC/Desktop/WebApplication2 2/WebApplication2/obj/Debug/netcoreapp2.0/WebApplication2.AssemblyInfo.cs
+/Users/HJ_MAC/Desktop/WebApplication2 2/WebApplication2/obj/Debug/netcoreapp2.0/WebApplication2.dll
+/Users/HJ_MAC/Desktop/WebApplication2 2/WebApplication2/obj/Debug/netcoreapp2.0/WebApplication2.pdb
